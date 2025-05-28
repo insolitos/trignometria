@@ -79,7 +79,7 @@
 <body>
     <div class="container">
         <h1>Razão Trigonométrica - Seno</h1>
-        
+
         <div class="teoria">
             <h2>📚 Definição</h2>
             <p>O seno de um ângulo agudo num triângulo retângulo é dado por:</p>
@@ -90,13 +90,13 @@
 
         <div class="simulador">
             <canvas id="trianguloCanvas" width="300" height="300"></canvas>
-            
+
             <div class="controlos">
-                <label>Ângulo θ (graus):</label>
+                <label for="angulo">Ângulo θ (graus):</label>
                 <input type="range" id="angulo" min="0" max="90" value="30">
                 <span id="valorAngulo">30°</span>
 
-                <label>Hipotenusa:</label>
+                <label for="hipotenusa">Hipotenusa:</label>
                 <input type="range" id="hipotenusa" min="50" max="200" value="100">
                 <span id="valorHipotenusa">100</span>
 
@@ -117,30 +117,38 @@
     <script>
         const canvas = document.getElementById('trianguloCanvas');
         const ctx = canvas.getContext('2d');
-        
+        const corSecundaria = getComputedStyle(document.documentElement).getPropertyValue('--cor-secundaria').trim();
+
         function atualizarTriangulo() {
             const angulo = parseFloat(document.getElementById('angulo').value);
             const hipotenusa = parseFloat(document.getElementById('hipotenusa').value);
             const radianos = angulo * Math.PI / 180;
             const catetoOposto = hipotenusa * Math.sin(radianos);
+            const catetoAdjacente = hipotenusa * Math.cos(radianos);
 
-            // Atualizar valores
+            // Atualizar valores na interface
             document.getElementById('valorAngulo').textContent = `${angulo}°`;
             document.getElementById('valorHipotenusa').textContent = hipotenusa;
             document.getElementById('seno').textContent = Math.sin(radianos).toFixed(3);
 
-            // Desenhar triângulo
+            // Desenhar triângulo no canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             ctx.beginPath();
-            ctx.moveTo(50, 250);
-            ctx.lineTo(50 + hipotenusa, 250);
-            ctx.lineTo(50, 250 - catetoOposto);
+            ctx.moveTo(50, 250);  // Ponto inicial (base)
+            ctx.lineTo(50 + catetoAdjacente, 250); // Base
+            ctx.lineTo(50 + catetoAdjacente, 250 - catetoOposto); // Altura
             ctx.closePath();
-            
-            ctx.strokeStyle = var(--cor-secundaria);
+
+            ctx.strokeStyle = corSecundaria;
             ctx.lineWidth = 3;
             ctx.stroke();
+
+            // Opcional: desenhar labels
+            ctx.fillStyle = corSecundaria;
+            ctx.font = "14px Segoe UI";
+            ctx.fillText("Hipotenusa", 50 + catetoAdjacente / 2, 250 - catetoOposto / 2);
+            ctx.fillText("Cateto oposto", 50 + catetoAdjacente + 5, 250 - catetoOposto / 2);
+            ctx.fillText("Cateto adjacente", 50 + catetoAdjacente / 2, 255);
         }
 
         document.getElementById('angulo').addEventListener('input', atualizarTriangulo);
